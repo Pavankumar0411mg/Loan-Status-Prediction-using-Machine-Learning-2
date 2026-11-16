@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Loan Status Predictor</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(135deg, #1a1a2e, #16213e, #0f3460);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 30px 16px;
+    }
+
+    .card {
+      background: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 20px;
+      padding: 40px;
+      width: 100%;
+      max-width: 720px;
+      color: #fff;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+    }
+
+    .header {
+      text-align: center;
+      margin-bottom: 32px;
+    }
+
+    .header .icon {
+      font-size: 48px;
+      margin-bottom: 10px;
+    }
+
+    .header h1 {
+      font-size: 26px;
+      font-weight: 700;
+      color: #e0e0ff;
+    }
+
+    .header p {
+      font-size: 13px;
+      color: #a0a8c0;
+      margin-top: 6px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+
+    .field {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .field.full { grid-column: span 2; }
+
+    label {
+      font-size: 12px;
+      font-weight: 600;
+      color: #a0a8c0;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    input, select {
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.15);
+      border-radius: 10px;
+      padding: 11px 14px;
+      color: #fff;
+      font-size: 14px;
+      outline: none;
+      transition: border 0.2s, background 0.2s;
+    }
+
+    input::placeholder { color: #606880; }
+
+    input:focus, select:focus {
+      border-color: #6c63ff;
+      background: rgba(108,99,255,0.12);
+    }
+
+    select option { background: #1a1a2e; color: #fff; }
+
+    .hint {
+      font-size: 11px;
+      color: #606880;
+    }
+
+    .btn {
+      margin-top: 28px;
+      width: 100%;
+      padding: 14px;
+      background: linear-gradient(135deg, #6c63ff, #48cfad);
+      border: none;
+      border-radius: 12px;
+      color: #fff;
+      font-size: 16px;
+      font-weight: 700;
+      cursor: pointer;
+      letter-spacing: 0.5px;
+      transition: opacity 0.2s, transform 0.1s;
+    }
+
+    .btn:hover { opacity: 0.9; transform: translateY(-1px); }
+    .btn:active { transform: translateY(0); }
+
+    .result {
+      margin-top: 24px;
+      padding: 18px 22px;
+      border-radius: 14px;
+      text-align: center;
+      font-size: 18px;
+      font-weight: 700;
+      display: none;
+      animation: fadeIn 0.4s ease;
+    }
+
+    .result.approved {
+      background: rgba(72, 207, 173, 0.15);
+      border: 1px solid #48cfad;
+      color: #48cfad;
+    }
+
+    .result.rejected {
+      background: rgba(255, 99, 99, 0.15);
+      border: 1px solid #ff6363;
+      color: #ff6363;
+    }
+
+    .result .sub {
+      font-size: 13px;
+      font-weight: 400;
+      margin-top: 4px;
+      opacity: 0.8;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    @media (max-width: 540px) {
+      .grid { grid-template-columns: 1fr; }
+      .field.full { grid-column: span 1; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="card">
+  <div class="header">
+    <div class="icon">🏦</div>
+    <h1>Loan Status Predictor</h1>
+    <p>Fill in the applicant details below to check loan eligibility</p>
+  </div>
+
+  <form id="loanForm">
+    <div class="grid">
+
+      <div class="field">
+        <label>Gender</label>
+        <select name="gender" required>
+          <option value="" disabled selected>Select gender</option>
+          <option value="1">Male</option>
+          <option value="0">Female</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label>Marital Status</label>
+        <select name="married" required>
+          <option value="" disabled selected>Select status</option>
+          <option value="1">Married</option>
+          <option value="0">Single</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label>Dependents</label>
+        <select name="dependents" required>
+          <option value="" disabled selected>Number of dependents</option>
+          <option value="0">0</option>
+          <option value="1">1</option>
+          <option value="2">2</option>
+          <option value="4">3 or more</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label>Education</label>
+        <select name="education" required>
+          <option value="" disabled selected>Select education</option>
+          <option value="1">Graduate</option>
+          <option value="0">Not Graduate</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label>Self Employed</label>
+        <select name="self_employed" required>
+          <option value="" disabled selected>Employment type</option>
+          <option value="0">No</option>
+          <option value="1">Yes</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label>Credit History</label>
+        <select name="credit_history" required>
+          <option value="" disabled selected>Credit history</option>
+          <option value="1">Good (meets guidelines)</option>
+          <option value="0">Bad (does not meet)</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label>Applicant Income <span class="hint">(₹ / month)</span></label>
+        <input type="number" name="applicant_income" placeholder="e.g. 5000" min="0" required />
+      </div>
+
+      <div class="field">
+        <label>Co-applicant Income <span class="hint">(₹ / month)</span></label>
+        <input type="number" name="coapplicant_income" placeholder="e.g. 1500" min="0" required />
+      </div>
+
+      <div class="field">
+        <label>Loan Amount <span class="hint">(₹ thousands)</span></label>
+        <input type="number" name="loan_amount" placeholder="e.g. 128" min="0" required />
+      </div>
+
+      <div class="field">
+        <label>Loan Amount Term <span class="hint">(months)</span></label>
+        <select name="loan_term" required>
+          <option value="" disabled selected>Select term</option>
+          <option value="12">12 months</option>
+          <option value="36">36 months</option>
+          <option value="60">60 months</option>
+          <option value="84">84 months</option>
+          <option value="120">120 months</option>
+          <option value="180">180 months</option>
+          <option value="240">240 months</option>
+          <option value="300">300 months</option>
+          <option value="360">360 months (30 yrs)</option>
+          <option value="480">480 months (40 yrs)</option>
+        </select>
+      </div>
+
+      <div class="field full">
+        <label>Property Area</label>
+        <select name="property_area" required>
+          <option value="" disabled selected>Select property area</option>
+          <option value="0">Rural</option>
+          <option value="1">Semiurban</option>
+          <option value="2">Urban</option>
+        </select>
+      </div>
+
+    </div>
+
+    <button type="submit" class="btn">🔍 Predict Loan Status</button>
+  </form>
+
+  <div class="result" id="result">
+    <div id="resultText"></div>
+    <div class="sub" id="resultSub"></div>
+  </div>
+</div>
+
+<script>
+  document.getElementById('loanForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+
+    const f = this;
+    const gender          = +f.gender.value;
+    const married         = +f.married.value;
+    const dependents      = +f.dependents.value;
+    const education       = +f.education.value;
+    const selfEmployed    = +f.self_employed.value;
+    const creditHistory   = +f.credit_history.value;
+    const applicantIncome = +f.applicant_income.value;
+    const coapplicantInc  = +f.coapplicant_income.value;
+    const loanAmount      = +f.loan_amount.value;
+    const loanTerm        = +f.loan_term.value;
+    const propertyArea    = +f.property_area.value;
+
+    const totalIncome = applicantIncome + coapplicantInc;
+    const monthlyEMI  = (loanAmount * 1000) / (loanTerm || 1);
+    const debtRatio   = totalIncome > 0 ? monthlyEMI / totalIncome : 999;
+
+    const reasons = [];
+
+    // Hard reject conditions
+    if (creditHistory === 0)  reasons.push('No credit history');
+    if (totalIncome === 0)    reasons.push('No income reported');
+    if (debtRatio > 0.5)      reasons.push('EMI exceeds 50% of monthly income');
+    if (loanAmount * 1000 > totalIncome * 12 * 6) reasons.push('Loan amount too high for income level');
+
+    // Soft score for borderline cases
+    let score = 0;
+    if (creditHistory === 1)  score += 3;
+    if (debtRatio < 0.3)      score += 2;
+    else if (debtRatio < 0.5) score += 1;
+    if (education === 1)      score += 1;
+    if (married === 1)        score += 0.5;
+    if (propertyArea === 1)   score += 0.5;
+    if (selfEmployed === 1)   score -= 0.5;
+    if (dependents >= 4)      score -= 0.5;
+    if (totalIncome < 2000)   score -= 1;
+
+    const approved = reasons.length === 0 && score >= 3;
+
+    const resultBox  = document.getElementById('result');
+    const resultText = document.getElementById('resultText');
+    const resultSub  = document.getElementById('resultSub');
+
+    resultBox.style.display = 'block';
+
+    if (approved) {
+      resultBox.className = 'result approved';
+      resultText.textContent = '✅ Loan Approved';
+      resultSub.textContent  = 'The applicant meets the eligibility criteria.';
+    } else {
+      resultBox.className = 'result rejected';
+      resultText.textContent = '❌ Loan Rejected';
+      resultSub.textContent  = reasons.length > 0
+        ? 'Reason: ' + reasons.join(' | ')
+        : 'The applicant does not meet the overall eligibility criteria.';
+    }
+
+    resultBox.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  });
+</script>
+
+</body>
+</html>
